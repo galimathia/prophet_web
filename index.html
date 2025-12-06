@@ -743,10 +743,13 @@
       const textUrl = `${S3_HOST}/${S3_BUCKET}/${predId}.txt`;
       try {
         const response = await fetch(textUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
         currentPrediction = await response.text();
       } catch (error) {
         console.error('Failed to load prediction text:', error);
-        currentPrediction = 'Не удалось загрузить предсказание...';
+        currentPrediction = 'Предсказание не найдено...';
       }
 
       // Load and play audio
