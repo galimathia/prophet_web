@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Комната Предсказаний</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .container {
+      position: relative;
+      min-height: 100vh;
+      background: black;
+      overflow: hidden;
+    }
+
+    /* Background Image */
+    .bg-image {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&q=80');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.4;
+      animation: breathe 20s infinite linear;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Gradient Overlay */
+    .gradient-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, 
+        rgba(88, 28, 135, 0.5),
+        rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0.9)
+      );
+    }
+
+    /* Fog Elements */
+    .fog {
+      position: absolute;
+      width: 24rem;
+      height: 24rem;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: 50%;
+      filter: blur(64px);
+      pointer-events: none;
+    }
+
+    .fog:nth-child(1) {
+      animation: float1 15s infinite ease-in-out;
+    }
+
+    .fog:nth-child(2) {
+      animation: float2 20s infinite ease-in-out;
+    }
+
+    .fog:nth-child(3) {
+      animation: float3 25s infinite ease-in-out;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(10vw, 10vh); }
+      50% { transform: translate(80vw, 70vh); }
+    }
+
+    @keyframes float2 {
+      0%, 100% { transform: translate(70vw, 20vh); }
+      50% { transform: translate(20vw, 80vh); }
+    }
+
+    @keyframes float3 {
+      0%, 100% { transform: translate(40vw, 60vh); }
+      50% { transform: translate(60vw, 30vh); }
+    }
+
+    /* Stars */
+    .star {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgb(192, 132, 252);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: twinkle 3s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Floating Symbols */
+    .symbol {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0;
+      pointer-events: none;
+      animation: fallDown 20s infinite linear;
+    }
+
+    @keyframes fallDown {
+      0% { 
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { 
+        transform: translateY(calc(100vh + 50px)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Content */
+    .content {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      padding-bottom: 2rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .icon-sparkles {
+      display: inline-block;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: rotate-pulse 20s infinite linear;
+    }
+
+    @keyframes rotate-pulse {
+      0% { transform: rotate(0deg) scale(1); }
+      25% { transform: rotate(90deg) scale(1.2); }
+      50% { transform: rotate(180deg) scale(1); }
+      75% { transform: rotate(270deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .icon-glow {
+      position: relative;
+    }
+
+    .icon-glow::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: rgba(168, 85, 247, 0.5);
+      border-radius: 50%;
+      filter: blur(24px);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.5); opacity: 0.6; }
+    }
+
+    h1 {
+      color: rgb(233, 213, 255);
+      font-size: 1.5rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      animation: glow-text 3s infinite;
+    }
+
+    @keyframes glow-text {
+      0%, 100% { text-shadow: 0 0 10px rgba(168, 85, 247, 0.5); }
+      50% { text-shadow: 0 0 20px rgba(168, 85, 247, 0.8); }
+    }
+
+    .subtitle {
+      color: rgba(192, 132, 252, 0.7);
+      font-size: 0.875rem;
+      letter-spacing: 0.05em;
+      animation: fade-pulse 3s infinite;
+    }
+
+    @keyframes fade-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* Main Area */
+    .main-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    /* Button Area */
+    .button-area {
+      text-align: center;
+    }
+
+    .main-button {
+      position: relative;
+      background: linear-gradient(to bottom right, rgb(88, 28, 135), rgb(59, 7, 100));
+      border: 2px solid rgba(168, 85, 247, 0.5);
+      border-radius: 9999px;
+      padding: 1.5rem 3rem;
+      cursor: pointer;
+      color: rgb(243, 232, 255);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      box-shadow: 0 25px 50px -12px rgba(88, 28, 135, 0.5);
+      transition: transform 0.2s;
+    }
+
+    .main-button:hover {
+      transform: scale(1.05);
+    }
+
+    .main-button:active {
+      transform: scale(0.95);
+    }
+
+    .main-button.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .main-button.disabled:hover {
+      transform: scale(1);
+    }
+
+    .main-button.disabled:active {
+      transform: scale(1);
+    }
+
+    .main-button.disabled .ripple-ring {
+      display: none;
+    }
+
+    /* Ripple Rings */
+    .ripple-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(168, 85, 247, 0.3);
+      border-radius: 50%;
+      animation: ripple 2s infinite;
+      pointer-events: none;
+    }
+
+    .ripple-ring:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+
+    .ripple-ring:nth-child(3) {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes ripple {
+      0% { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    .button-glow {
+      position: absolute;
+      inset: 0;
+      background: rgba(147, 51, 234, 0.3);
+      border-radius: 9999px;
+      filter: blur(40px);
+      animation: pulse 2s infinite;
+      pointer-events: none;
+    }
+
+    .button-icon {
+      font-size: 2rem;
+      display: block;
+      margin: 0 auto 0.5rem;
+      animation: float-icon 2s infinite;
+    }
+
+    @keyframes float-icon {
+      0%, 100% { transform: translateY(0); opacity: 0.5; }
+      50% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .button-quote {
+      margin-top: 2rem;
+      color: rgba(192, 132, 252, 0.6);
+      font-size: 0.875rem;
+      font-style: italic;
+      animation: float-text 4s infinite;
+    }
+
+    @keyframes float-text {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-3px); opacity: 0.7; }
+    }
+
+    /* Prediction Area */
+    .prediction-area {
+      text-align: center;
+      width: 100%;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.5) rotateY(-180deg); }
+      to { opacity: 1; transform: scale(1) rotateY(0); }
+    }
+
+    /* Magic Ball */
+    .magic-ball {
+      position: relative;
+      width: 12rem;
+      height: 12rem;
+      margin: 0 auto 2rem;
+      animation: float-ball 2s infinite ease-in-out;
+    }
+
+    @keyframes float-ball {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.08); }
+    }
+
+    .ball-glow {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom right, rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.3));
+      border-radius: 50%;
+      filter: blur(64px);
+      animation: pulse 3s infinite;
+    }
+
+    .ball-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, rgba(147, 51, 234, 0.2), rgba(219, 39, 119, 0.2));
+      border-radius: 50%;
+      border: 2px solid rgba(192, 132, 252, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .ball-highlight {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 4rem;
+      height: 4rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      filter: blur(40px);
+      animation: move-highlight 3s infinite;
+    }
+
+    @keyframes move-highlight {
+      0%, 100% { transform: translate(0, 0); opacity: 0.3; }
+      50% { transform: translate(20px, 10px); opacity: 0.6; }
+    }
+
+    .ball-icon {
+      font-size: 4rem;
+      z-index: 1;
+      animation: rotate-pulse 10s infinite linear;
+    }
+
+    /* Rotating Rings */
+    .rotating-ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(168, 85, 247, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .rotating-ring:nth-child(1) {
+      animation: rotateRing1 8s infinite linear;
+    }
+
+    .rotating-ring:nth-child(2) {
+      animation: rotateRing2 6s infinite linear;
+    }
+
+    .rotating-ring:nth-child(3) {
+      animation: rotateRing3 4s infinite linear;
+    }
+
+    @keyframes rotateRing1 {
+      from { transform: rotateX(60deg) rotateZ(0deg); }
+      to { transform: rotateX(60deg) rotateZ(360deg); }
+    }
+
+    @keyframes rotateRing2 {
+      from { transform: rotateX(80deg) rotateZ(0deg); }
+      to { transform: rotateX(80deg) rotateZ(360deg); }
+    }
+
+    @keyframes rotateRing3 {
+      from { transform: rotateX(100deg) rotateZ(0deg); }
+      to { transform: rotateX(100deg) rotateZ(360deg); }
+    }
+
+    /* Prediction Box */
+    .prediction-box {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      animation: slideUp 0.5s ease-out 0.5s backwards;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .prediction-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(192, 132, 252, 0.5);
+      border-radius: 1rem;
+      animation: border-pulse 2s infinite;
+      pointer-events: none;
+    }
+
+    @keyframes border-pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    .prediction-text {
+      color: rgb(243, 232, 255);
+      font-style: italic;
+      line-height: 1.625;
+      position: relative;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+
+    .prediction-text span {
+      display: inline;
+      white-space: pre-wrap;
+    }
+
+    .prediction-text.loading {
+      animation: fade-pulse 1s infinite;
+    }
+
+    /* Audio Playing Indicator */
+    .audio-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: rgb(192, 132, 252);
+      border-radius: 50%;
+      animation: bounce-dot 1s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce-dot {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.5); opacity: 1; }
+    }
+
+    .audio-indicator span {
+      color: rgb(192, 132, 252);
+      font-size: 0.875rem;
+      margin-left: 0.5rem;
+      animation: fade-pulse 1.5s infinite;
+    }
+
+    /* Reset Button */
+    .reset-button {
+      background: rgba(88, 28, 135, 0.5);
+      border: 1px solid rgba(168, 85, 247, 0.5);
+      border-radius: 9999px;
+      color: rgb(233, 213, 255);
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reset-button:hover {
+      background: rgba(109, 40, 217, 0.5);
+      transform: scale(1.05);
+    }
+
+    .reset-button:active {
+      transform: scale(0.95);
+    }
+
+    .reset-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, 
+        rgba(147, 51, 234, 0),
+        rgba(147, 51, 234, 0.5),
+        rgba(147, 51, 234, 0)
+      );
+      animation: shimmer 2s infinite linear;
+    }
+
+    @keyframes shimmer {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(100%); }
+    }
+
+    .reset-button span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      animation: fadeIn 1s ease-out 1.5s backwards;
+    }
+
+    .footer p {
+      color: rgba(168, 85, 247, 0.5);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      animation: fade-pulse 3s infinite;
+    }
+
+    /* Hidden class */
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Background -->
+    <div class="bg-image"></div>
+    <div class="gradient-overlay"></div>
+
+    <!-- Fog -->
+    <div class="fog"></div>
+    <div class="fog"></div>
+    <div class="fog"></div>
+
+    <!-- Stars (generated by JS) -->
+    <div id="stars"></div>
+
+    <!-- Floating Symbols (generated by JS) -->
+    <div id="symbols"></div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Header -->
+      <div class="header">
+        <div class="icon-glow">
+          <div class="icon-sparkles">✨</div>
+        </div>
+        <h1>Комната Предсказаний</h1>
+        <p class="subtitle">Узнайте, что готовит вам судьба</p>
+      </div>
+
+      <!-- Main Area -->
+      <div class="main-area">
+        <!-- Initial Button -->
+        <div id="buttonArea" class="button-area">
+          <button class="main-button" id="revealBtn">
+            <div class="ripple-ring"></div>
+            <div class="ripple-ring"></div>
+            <div class="ripple-ring"></div>
+            <div class="button-glow"></div>
+            <span class="button-icon">✨</span>
+            <span id="buttonText">Послушать<br>предсказание</span>
+          </button>
+          <p class="button-quote">"Прикоснитесь к тайнам вселенной"</p>
+        </div>
+
+        <!-- Prediction Display -->
+        <div id="predictionArea" class="prediction-area hidden">
+          <!-- Magic Ball -->
+          <div class="magic-ball">
+            <div class="rotating-ring"></div>
+            <div class="rotating-ring"></div>
+            <div class="rotating-ring"></div>
+            <div class="ball-glow"></div>
+            <div class="ball-inner">
+              <div class="ball-highlight"></div>
+              <div class="ball-icon">✨</div>
+            </div>
+          </div>
+
+          <!-- Prediction Text Box -->
+          <div class="prediction-box">
+            <p id="predictionText" class="prediction-text">...</p>
+          </div>
+
+          <!-- Audio Indicator -->
+          <div id="audioIndicator" class="audio-indicator hidden">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <span>Воспроизведение...</span>
+          </div>
+
+          <!-- Replay Button -->
+          <button id="replayBtn" class="reset-button hidden">
+            <span>Прослушать еще раз</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>· · · ✦ · · ·</p>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audioPlayer"></audio>
+
+  <script>
+    const SYMBOLS = ['🌙', '👁️', '✨'];
+
+    // Get audio filename from URL parameter
+    const params = new URLSearchParams(window.location.search);
+    const predId = params.get('uid');
+
+    // Generate stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 30; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 5 + 's';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      starsContainer.appendChild(star);
+    }
+
+    // Generate floating symbols
+    const symbolsContainer = document.getElementById('symbols');
+    for (let i = 0; i < 5; i++) {
+      const symbol = document.createElement('div');
+      symbol.className = 'symbol';
+      symbol.textContent = SYMBOLS[i % SYMBOLS.length];
+      symbol.style.left = Math.random() * 100 + '%';
+      symbol.style.animationDelay = Math.random() * 10 + 's';
+      symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+      symbolsContainer.appendChild(symbol);
+    }
+
+    // Elements
+    const buttonArea = document.getElementById('buttonArea');
+    const predictionArea = document.getElementById('predictionArea');
+    const predictionText = document.getElementById('predictionText');
+    const audioIndicator = document.getElementById('audioIndicator');
+    const replayBtn = document.getElementById('replayBtn');
+    const revealBtn = document.getElementById('revealBtn');
+    const buttonText = document.getElementById('buttonText');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    // S3 Configuration
+    const S3_HOST = 'http://localhost:9001';
+    const S3_BUCKET = 'test';
+
+    const audioUrl = `${S3_HOST}/${S3_BUCKET}/${predId}.mp3`;
+    let currentPrediction = '';
+
+    // Check if predId is provided
+    if (!predId) {
+      buttonText.innerHTML = 'Отсканируй<br>QR-code';
+      revealBtn.classList.add('disabled');
+    }
+
+    // Function to play audio
+    function playAudio() {
+      audioIndicator.classList.remove('hidden');
+      replayBtn.classList.add('hidden');
+      audioPlayer.currentTime = 0;
+      audioPlayer.play();
+    }
+
+    // Reveal prediction
+    revealBtn.addEventListener('click', async () => {
+      // Don't do anything if button is disabled
+      if (!predId) {
+        return;
+      }
+      buttonArea.classList.add('hidden');
+      predictionArea.classList.remove('hidden');
+
+      // Show loading
+      predictionText.textContent = '...';
+      predictionText.classList.add('loading');
+
+      // Load text from S3
+      const textUrl = `${S3_HOST}/${S3_BUCKET}/${predId}.txt`;
+      try {
+        const response = await fetch(textUrl);
+        currentPrediction = await response.text();
+      } catch (error) {
+        console.error('Failed to load prediction text:', error);
+        currentPrediction = 'Не удалось загрузить предсказание...';
+      }
+
+      // Load and play audio
+      audioPlayer.src = audioUrl;
+      playAudio();
+
+      // Show text after delay
+      setTimeout(() => {
+        predictionText.classList.remove('loading');
+        animateText(predictionText, currentPrediction);
+      }, 300);
+
+      // Hide audio indicator and show replay button when audio ends
+      audioPlayer.onended = () => {
+        audioIndicator.classList.add('hidden');
+        replayBtn.classList.remove('hidden');
+      };
+    });
+
+    // Replay audio
+    replayBtn.addEventListener('click', () => {
+      playAudio();
+    });
+
+    // Animate text character by character
+    function animateText(element, text) {
+      element.textContent = '';
+      const chars = text.split('');
+      chars.forEach((char, index) => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        span.style.opacity = '0';
+        span.style.animation = `fadeInChar 0.5s ease-out ${index * 0.08}s forwards`;
+        element.appendChild(span);
+      });
+    }
+
+    // Add character fade-in animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInChar {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
+
