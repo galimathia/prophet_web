@@ -706,8 +706,8 @@
     const audioPlayer = document.getElementById('audioPlayer');
 
     // S3 Configuration
-    const S3_HOST = 'http://localhost:9001';
-    const S3_BUCKET = 'test';
+    const S3_HOST = 'http://storage.yandexcloud.net';
+    const S3_BUCKET = 'prophet';
 
     const audioUrl = `${S3_HOST}/${S3_BUCKET}/${predId}.mp3`;
     let currentPrediction = '';
